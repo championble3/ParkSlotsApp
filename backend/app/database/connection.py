@@ -6,40 +6,6 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from app.database.db import SessionLocal, Base, read_parks, read_park_info, read_buildings_info
 
-def get_park_data():
-    load_dotenv()  # Load environment variables from .env file
-    server = os.getenv('DB_SERVER', 'TOMASZ')
-    database = os.getenv('DB_DATABASE', 'pwr_park_db')
-    user = os.getenv('DB_USER', 'tomek')
-    password = os.getenv('DB_PASSWORD', '063900')
-    driver = 'ODBC Driver 17 for SQL Server'
-    
-    connection_string = f'DRIVER={driver};SERVER={server};DATABASE={database};UID={user};PWD={password}'
-    
-    conn = pyodbc.connect(connection_string)
-    
-    sql_query = f"""SELECT * FROM park_table"""
-    sql_park_info_query = f"""SELECT * FROM park_info"""
-    sql_buildings_info_query = f"""SELECT * FROM buildings"""
-    df = pd.read_sql_query(sql_query,conn)
-    df_park_info = pd.read_sql_query(sql_park_info_query,conn)
-    df_buildings_info = pd.read_sql_query(sql_buildings_info_query,conn)
-    df['time_park_extract'] = pd.to_datetime(df['time_park'], format='%H:%M')
-    df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
-    df['Year'] = df['date'].dt.year
-    df['Month'] = df['date'].dt.month
-    df['Day'] = df['date'].dt.day
-    df['Weekday'] = df['date'].dt.weekday
-    df['Hour'] = df['time_park_extract'].dt.hour
-    df['Minute'] = df['time_park_extract'].dt.minute
-    df['datetime'] = df.apply(lambda row: datetime.datetime.combine(row['date'], row['time_park_extract'].time()), axis=1)
-    conn.close()
-    
-    return df, df_park_info, df_buildings_info
-
-df, df_park_info, df_buildings_info = get_park_data()
-print(df_buildings_info['building_name'].head())
-
 def get_park_data_orm(db: Session):
     parks = read_parks(db)
     park_info = read_park_info(db)

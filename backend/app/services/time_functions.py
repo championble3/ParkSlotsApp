@@ -45,3 +45,17 @@ def get_time_park_building(park_id,building):
 
     return duration
 
+def time_parsing(date_time_str: str):
+    try:
+        if date_time_str.endswith('Z'):
+            date_time_str = date_time_str[:-1]
+            dt_object = datetime.datetime.fromisoformat(date_time_str)
+            return dt_object
+        else:
+            dt_object = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
+            return dt_object
+    except ValueError as e:
+        print(f"[ERROR] Nieprawidłowy format daty: {date_time_str}")
+        raise e
+
+    

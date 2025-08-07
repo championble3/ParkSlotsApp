@@ -26,11 +26,11 @@ class UserInput(pydantic.BaseModel):
             }
         }
 
-@router.get('/buildings')
+@router.get('/building_names')
 async def buildings(db: Session = Depends(get_db)):
     df, df_park, df_buildings = get_park_data_orm(db)
     buildings_list = df_buildings['building_name'].tolist()
-    return {'buildings': buildings_list}
+    return {'building_names': buildings_list}
 
 @router.post('/recommended_park')
 async def recommendation(request: UserInput, db: Session = Depends(get_db)):

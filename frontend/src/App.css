@@ -1,33 +1,56 @@
-/* App.css */
+/* src/app.css */
 .container {
   max-width: 400px;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin: 30px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f7fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.title {
+h1 {
   text-align: center;
-  color: #333;
+  color: #222;
+  margin-bottom: 20px;
 }
 
-.list {
-  list-style-type: none;
+ul {
+  list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.item {
-  background-color: #e0e7ff;
-  margin: 8px 0;
-  padding: 10px 15px;
-  border-radius: 6px;
+.building-item { 
+  background: #dbeafe;
+  margin-bottom: 10px;
+  padding: 12px 20px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-weight: 500;
+  color: #1e40af;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  user-select: none;
 }
 
-.item:hover {
-  background-color: #c7d2fe;
+.building-item:hover {
+  background: #bfdbfe;
+}
+
+.building-item.selected {
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  cursor: default;
+}
+
+.selection-info {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e0e7ff;
+  border-left: 4px solid #4f46e5;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
 }

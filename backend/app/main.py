@@ -10,14 +10,12 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json"
 )
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000"],  # lub ["*"] w dev
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
-
+    allow_headers=["*"],
 )
 
 app.include_router(router)
