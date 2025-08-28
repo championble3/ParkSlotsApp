@@ -4,16 +4,27 @@ import os
 from dotenv import load_dotenv
 import urllib
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path)
 
-server = os.getenv('DB_SERVER', 'TOMASZ')
-database = os.getenv('DB_DATABASE', 'pwr_park_db')  
-user = os.getenv('DB_USER', 'tomek')
-password = os.getenv('DB_PASSWORD', '063900')
-driver = 'ODBC Driver 17 for SQL Server'
+# server = os.getenv('DB_SERVER', 'TOMASZ')
+# database = os.getenv('DB_DATABASE', 'pwr_park_db')  
+# user = os.getenv('DB_USER', 'tomek')
+# password = os.getenv('DB_PASSWORD', '063900')
+# driver = 'ODBC Driver 17 for SQL Server'
+
+# params = urllib.parse.quote_plus(
+#     f'DRIVER={driver};SERVER={server};DATABASE={database};UID={user};PWD={password}')
+
+server = os.getenv('DB_SERVER')
+database = os.getenv('DB_NAME')
+user = os.getenv('DB_USER')
+password = os.getenv('DB_PASSWORD')
+driver = os.getenv('DB_DRIVER')
 
 params = urllib.parse.quote_plus(
-    f'DRIVER={driver};SERVER={server};DATABASE={database};UID={user};PWD={password}')
+    f'DRIVER={{{driver}}};SERVER={server};DATABASE={database};UID={user};PWD={password}'
+)
 
 DATABASEURL = f'mssql+pyodbc:///?odbc_connect={params}'
 
