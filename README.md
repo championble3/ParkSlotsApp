@@ -1,4 +1,4 @@
-# ParkingSlotsApp – Instrukcja uruchomienia projektu
+# Praca Inżynierska – Instrukcja uruchomienia projektu
 
 **ParkingSlotsApp** to prototypowy system rekomendacji miejsc parkingowych na kampusie Politechniki Wrocławskiej.
 
