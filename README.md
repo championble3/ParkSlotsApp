@@ -192,7 +192,6 @@ Aplikacja powinna automatycznie otworzyć się w przeglądarce pod adresem `http
 | Problem | Możliwe rozwiązanie |
 | :--- | :--- |
 | **Błąd połączenia z bazą SQL** | 1. Sprawdź poprawność danych w pliku `.env`.<br>2. Upewnij się, że w *SQL Server Configuration Manager* włączony jest protokół TCP/IP.<br>3. Sprawdź, czy usługa SQL Server Browser działa. |
-| **Błąd CORS** | Jeśli frontend nie widzi backendu, upewnij się, że w `main.py` dodano `CORSMiddleware` z odpowiednimi uprawnieniami (allow_origins). |
 | **Błąd `Module not found` (Python)** | Upewnij się, że wykonałeś `source venv/bin/activate` lub `.\venv\Scripts\activate` przed instalacją pakietów. |
 | **OpenRouteService Error** | Sprawdź, czy klucz API w pliku `.env` jest poprawny i czy posiadasz połączenie z Internetem. |
 
