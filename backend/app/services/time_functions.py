@@ -1,4 +1,5 @@
 import datetime
+from datetime import time
 import openrouteservice
 from app.database.connection import get_park_data_orm
 from app.database.db import SessionLocal
@@ -26,15 +27,6 @@ def get_time_car_park(park_id_list,user_lat,user_lng):
         duration_dict[park_id] = duration
 
     return duration_dict
-    #dummy times
-    # car_park_times = {
-    #     'car_park_4': 8,
-    #     'car_park_2': 10,
-    #     'car_park_5': 9,
-    #     'car_park_6': 5,
-    #     'car_park_7': 18
-    # }
-    # return car_park_times
 
 def get_time_park_building(park_id,building):
 
@@ -50,6 +42,25 @@ def get_time_park_building(park_id,building):
 
     route = client.directions([park_cords,building_cords], profile='foot-walking')
     duration = route['routes'][0]['summary']['duration'] / 60
+
+
+    current_time = datetime.datetime.now().time()  
+
+    if park_id == 'park_6':
+        intervals_minus_2 = [
+            (time(7, 15), time(7, 30)),
+            (time(9,  0), time(9, 30)),
+            (time(11, 0), time(11, 30)),
+            (time(13, 0), time(13, 30)),
+        ]
+
+        in_interval = any(start <= current_time <= end for start, end in intervals_minus_2)
+
+        if in_interval:
+            duration -= 4
+        else:
+            duration -= 8
+
 
     return duration
 

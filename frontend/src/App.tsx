@@ -8,6 +8,7 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [locationStatus, setLocationStatus] = useState<"inactive" | "requesting" | "active" | "success" | "error">("inactive");
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
 
   const handleSelectedBuildings = async (start: string, end: string) => {
@@ -16,14 +17,12 @@ function App() {
     setRecommendedPark(null);
     setLocationStatus("requesting");
 
-    // Check geolocation permission
     if (!navigator.geolocation) {
       setError("Geolokalizacja nie jest dostępna w tej przeglądarce");
       setIsLoading(false);
       return;
     }
 
-    // Close existing connection
     if (socketRef.current) {
       socketRef.current.close();
     }
@@ -39,28 +38,39 @@ function App() {
         setLocationStatus("active");
 
         const sendLocation = () => {
+          // Sprawdzamy, czy połączenie jest otwarte przed próbą wysłania
+          if (socket.readyState !== WebSocket.OPEN) return;
+
           navigator.geolocation.getCurrentPosition(
             (position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+              
+              setUserLocation({ lat, lng });
+              
               const data = {
                 first_building: start,
                 last_building: end,
-                user_lat: position.coords.latitude,
-                user_lng: position.coords.longitude,
-                date_time: new Date().toISOString(),
+                user_lat: lat,
+                user_lng: lng,
+                date_time: new Date().toISOString(), // Aktualizacja czasu przy każdym wysłaniu
               };
               socket.send(JSON.stringify(data));
             },
             (error) => {
               console.error("Geolocation error:", error);
-              setError("Nie udało się pobrać lokalizacji. Sprawdź uprawnienia.");
+              // Nie przerywamy interwału przy pojedynczym błędzie, tylko logujemy
               setLocationStatus("error");
             },
-            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
           );
         };
 
+        // Pierwsze wywołanie natychmiast
         sendLocation();
-        locationInterval = setInterval(sendLocation, 1000);
+        
+        // Kolejne wywołania co 2 minuty (120000 ms)
+        locationInterval = setInterval(sendLocation, 120000);
       };
 
       socket.onmessage = (event) => {
@@ -82,7 +92,7 @@ function App() {
         if (locationInterval) {
           clearInterval(locationInterval);
         }
-        setLocationStatus("inactive");
+        // Jeśli zamknięcie nie było celowe (resetApp), status może pozostać
       };
     } catch (err) {
       setError("Nie udało się nawiązać połączenia");
@@ -99,22 +109,21 @@ function App() {
     setIsLoading(false);
     setError(null);
     setLocationStatus("inactive");
+    setUserLocation(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-8 max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-lg border border-gray-100 mb-4">
             <Car className="w-5 h-5 text-blue-600" />
-            <span className="font-bold text-gray-800">ParkingAI</span>
+            <span className="font-bold text-gray-800">PwrParking</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Inteligentne parkowanie</h1>
           <p className="text-gray-600">Znajdź najlepszy parking w czasie rzeczywistym</p>
         </div>
 
-        {/* Location Status */}
         {locationStatus !== "inactive" && (
           <div className="mb-6">
             <div className={`
@@ -135,11 +144,9 @@ function App() {
           </div>
         )}
 
-        {/* Main Content */}
         <div className="space-y-6">
           <BuildingsSelector onSelected={handleSelectedBuildings} />
 
-          {/* Error Display */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -149,12 +156,15 @@ function App() {
             </div>
           )}
 
-          {/* Loading or Result */}
           {(isLoading || recommendedPark) && (
-            <RecommendationDisplay park={recommendedPark} isLoading={isLoading} />
+            <RecommendationDisplay 
+              park={recommendedPark} 
+              isLoading={isLoading} 
+              userLat={userLocation?.lat}
+              userLng={userLocation?.lng}
+            />
           )}
 
-          {/* Reset Button */}
           {(isLoading || recommendedPark || error) && (
             <div className="text-center">
               <button

@@ -66,7 +66,6 @@ def get_df_results(input_date: str):
         df_result.append(row)
 
     df_results = pd.DataFrame(df_result)
-    print(df_results)
     return df_results
 
 def get_park_prediction(df_results):
@@ -82,19 +81,18 @@ def get_park_prediction(df_results):
 def park_recommendation(first_building, last_building, df_results, user_lat, user_lng, request_time: str):
     print(park_ids)
     time_car_park = get_time_car_park(park_ids, user_lat, user_lng)
-
+    print('time car park',time_car_park)
     park_slots_now_dict = {}
     park_slots_now = slots_now
 
-    # Bazowy czas startowy (czas zapytania)
     base_dt = time_parsing(request_time)
 
     if park_slots_now == []:
         parkings = df_park_info['park_id'].values.tolist()
         park_slots_pred = get_park_prediction(df_results)
         print('park slots predicted:', park_slots_pred)
-        alfa = 10
-        beta = 30
+        alfa = 1.3
+        beta = 3
         equation_dict = {}
 
         for park_id in parkings:
@@ -102,20 +100,24 @@ def park_recommendation(first_building, last_building, df_results, user_lat, use
 
             time_park_building = get_time_park_building(park_id, first_building)
             time_building_park = get_time_park_building(park_id, last_building)
+
             car_park_time = time_car_park[park_id]
 
             arrival_dt = base_dt + datetime.timedelta(minutes=car_park_time)
             df_results_pred = get_df_results(arrival_dt.isoformat())
             park_slots_available_pred = get_park_prediction(df_results_pred)[park_id]
 
-            r = car_park_time / ((park_slots_available_pred / totals[0]) * beta + 1)
+            r = car_park_time / ((park_slots_available_pred / totals[0]) * beta + 0.1)
             if park_slots_available_pred > 0:
                 equation = time_park_building + time_building_park + car_park_time + (alfa * r)
                 equation_dict[park_id] = equation
 
         print(equation_dict)
         print('Only recommendation used, no live slots')
-        return min(equation_dict, key=equation_dict.get)
+        recommended_park_id = min(equation_dict, key=equation_dict.get)
+        recommended_name = df_park_info.loc[df_park_info['park_id'] == recommended_park_id, 'park_name'].values[0]
+
+        return recommended_name
 
     else:
         for id, park_slot_now_loop in zip(park_ids, park_slots_now):
@@ -123,8 +125,8 @@ def park_recommendation(first_building, last_building, df_results, user_lat, use
 
         equation_dict = {}
         parkings = df_park_info['park_id'].values.tolist()
-        alfa = 10
-        beta = 30
+        alfa = 1.3
+        beta = 3
         
         for park_id in parkings:
             totals = df_park_info[df_park_info['park_id'] == park_id]['park_total'].values
@@ -138,19 +140,34 @@ def park_recommendation(first_building, last_building, df_results, user_lat, use
             park_slots_available_pred = get_park_prediction(df_results_pred)[park_id]
 
             park_slots_available = int(park_slots_now_dict[int(park_id.split('_')[1])])
+            print(park_id)
+            print('time park building', time_park_building)
+            print('time building park', time_building_park)
             print('park slots pred:',park_slots_available_pred)
             print('park slots now:',park_slots_available)
-            gamma = np.exp(car_park_time * (-0.1))
+            gamma = np.exp(car_park_time * (-0.01))
+            print('gamma', gamma)
             a_eff = gamma * park_slots_available + (1 - gamma) * park_slots_available_pred
 
-            r = car_park_time / ((a_eff / totals[0]) * beta + 1)
+            r = car_park_time / ((a_eff / totals[0]) * beta + 0.1)
             if a_eff > 0:
                 equation = time_park_building + time_building_park + car_park_time + (alfa * r)
+                print('alfa',alfa)
+                print('risk',r)
+                print('slots eff', a_eff)
+                print('slots total', totals[0])
                 equation_dict[park_id] = equation
 
         print(equation_dict)
         print('Live slots used with recommendation')
-        return min(equation_dict, key=equation_dict.get)
+        
+        recommended_park_id = min(equation_dict, key=equation_dict.get)
+        recommended_name = df_park_info.loc[df_park_info['park_id'] == recommended_park_id, 'park_name'].values[0]
 
+        return recommended_name 
 
+def get_address(park_name):
+    park_lat = df_park_info.loc[df_park_info['park_name'] == park_name, 'park_lat'].values[0]
+    park_lng = df_park_info.loc[df_park_info['park_name'] == park_name, 'park_lng'].values[0]
+    return f'{park_lat},{park_lng}'
 

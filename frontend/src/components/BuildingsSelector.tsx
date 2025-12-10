@@ -41,7 +41,7 @@ function BuildingsSelector({ onSelected }: BuildingsSelectorProps) {
   const handleSelect = (name: BuildingName) => {
     if (!startBuilding) {
       setStartBuilding(name);
-    } else if (startBuilding !== name) {
+    } else {
       onSelected(startBuilding, name);
       setStartBuilding(null);
     }
@@ -114,12 +114,11 @@ function BuildingsSelector({ onSelected }: BuildingsSelectorProps) {
                 className={`
                   p-4 rounded-xl text-left font-medium transition-all duration-200 transform
                   ${isSelected 
-                    ? "bg-green-100 text-green-800 border-2 border-green-300" 
+                    ? "bg-green-100 text-green-800 border-2 border-green-300 hover:bg-green-200 hover:border-green-400 hover:scale-[1.02] shadow-sm" 
                     : startBuilding 
                       ? "bg-blue-50 text-blue-700 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 hover:scale-[1.02] shadow-sm" 
                       : "bg-gray-50 text-gray-700 border-2 border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 hover:scale-[1.02] shadow-sm"
                   }
-                  hover:shadow-md
                 `}
               >
                 <div className="flex items-center gap-3">

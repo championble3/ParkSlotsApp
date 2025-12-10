@@ -106,7 +106,7 @@ for epopch in range(epoch):
         val_pred = model(X_test)
         val_loss = loss(val_pred, y_test)
 
-    print(f'Epoch {epopch+1}/{epopch}, Loss:{loss_value.item()}, Val_loss:{val_loss}')
+    print(f'Epoch {epopch}/{epoch}, Loss:{loss_value.item()}, Val_loss:{val_loss}')
 
     if best_val_loss > val_loss:
         best_val_loss = val_loss
