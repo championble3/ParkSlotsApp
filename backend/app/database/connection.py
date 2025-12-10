@@ -11,7 +11,7 @@ def get_park_data_orm(db: Session):
     park_info = read_park_info(db)
     buildings_info = read_buildings_info(db)
 
-    # tu slowniki do df
+    # here are df dicts
     parks_dict = {
         'id': [park.id for park in parks ],
         'park_id': [park.park_id for park in parks],

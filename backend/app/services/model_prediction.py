@@ -4,7 +4,7 @@ import numpy as np
 from app.services.model import RegressionModel
 
 model = RegressionModel(input_size=7)
-model.load_state_dict(torch.load('models/best_model.pth'))
+model.load_state_dict(torch.load('models/park_slots_pred_model.pth'))
 model.eval()
 
 x_scaler = joblib.load('models/x_scaler.pkl')

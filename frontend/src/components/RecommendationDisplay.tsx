@@ -15,7 +15,7 @@ function RecommendationDisplay({ park, isLoading, userLat, userLng }: Recommenda
   useEffect(() => {
     if (!park) return;
 
-    // Kontroler do anulowania fetch, jeśli park zmieni się zanim zapytanie się zakończy
+    // kontroler do anulowania fetch, jeśli park zmieni się zanim zapytanie się zakończy
     const controller = new AbortController();
     const signal = controller.signal;
 
@@ -93,7 +93,7 @@ function RecommendationDisplay({ park, isLoading, userLat, userLng }: Recommenda
       </div>
 
       <div className="p-6">
-        {/* Sekcja z nazwą parkingu */}
+        {/* seekcja z nazwą parkingu */}
         <div className="flex items-center justify-center p-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 mb-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
@@ -106,7 +106,7 @@ function RecommendationDisplay({ park, isLoading, userLat, userLng }: Recommenda
           </div>
         </div>
 
-        {/* Sekcja z przyciskiem */}
+        {/* sekcja z przyciskiem */}
         <div className="flex flex-col items-center gap-3">
           <button
             onClick={openGoogleMaps}
@@ -132,7 +132,7 @@ function RecommendationDisplay({ park, isLoading, userLat, userLng }: Recommenda
             )}
           </button>
 
-          {/* Mała informacja pomocnicza */}
+          {/* info pomocnicze */}
           {loadingLocation && (
             <p className="text-xs text-gray-400 animate-pulse">Aktualizuję lokalizację dla nowego parkingu...</p>
           )}
